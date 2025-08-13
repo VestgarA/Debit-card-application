@@ -46,14 +46,62 @@ public class DebitCardTest {
     }
 
     @Test
-    public void CheckingErrorMessage() {
+    public void lastNameFieldNotFilled() {
         WebElement form = driver.findElement(By.cssSelector("form"));
         form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("");
         form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79507550000");
         form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
         form.findElement(By.cssSelector(".button")).click();
-        WebElement resalt = driver.findElement(By.cssSelector(".input__sub"));
+        WebElement resalt = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
         assertTrue(resalt.isDisplayed());
         assertEquals("Поле обязательно для заполнения", resalt.getText());
+    }
+
+    @Test
+    public void anEmptyFieldPhone() {
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Иванов Иван");
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("");
+        form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        form.findElement(By.cssSelector(".button")).click();
+        WebElement resalt = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
+        assertTrue(resalt.isDisplayed());
+        assertEquals("Поле обязательно для заполнения", resalt.getText());
+    }
+
+    @Test
+    public void notInstalledCheckBox() {
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Иванов Иван");
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79507550000");
+        form.findElement(By.cssSelector("[data-test-id='agreement']"));
+        form.findElement(By.cssSelector(".button")).click();
+        WebElement resalt = driver.findElement(By.cssSelector("[data-test-id='agreement'].input_invalid .checkbox__text"));
+        assertTrue(resalt.isDisplayed());
+        assertEquals("Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй", resalt.getText());
+    }
+
+    @Test
+    public void incorrectNameLastNameFormat() {
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Ivanov Ivan");
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79507550000");
+        form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        form.findElement(By.cssSelector(".button")).click();
+        WebElement resalt = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
+        assertTrue(resalt.isDisplayed());
+        assertEquals("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.", resalt.getText());
+    }
+
+    @Test
+    public void incorrectPhoneNumber() {
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Иванов Иван");
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("79507550000");
+        form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
+        form.findElement(By.cssSelector(".button")).click();
+        WebElement resalt = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
+        assertTrue(resalt.isDisplayed());
+        assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", resalt.getText());
     }
 }
